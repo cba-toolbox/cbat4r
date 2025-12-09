@@ -3,6 +3,7 @@
 export(jatosify)
 export(set_cbat)
 export(set_phaser)
+export(set_qnr)
 importFrom(jsonlite,write_json)
 importFrom(tools,file_path_sans_ext)
 importFrom(utils,download.file)

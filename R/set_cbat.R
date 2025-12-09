@@ -1,15 +1,20 @@
-#' @title Set template files for CBAT
+#' @title Initialize CBAT (Task Template)
+#' @description This function creates a new directory for a task and sets up the necessary files to run a jsPsych experiment (CBAT).
+#' It downloads the specified version of jsPsych (v6, v7, or v8), prepares HTML files for different environments (Demo, JATOS, CEMA),
+#' and downloads template JavaScript files and stimuli (reward/punishment images) from the template repository.
 #' @importFrom utils download.file
 #' @importFrom utils unzip
-#' @param task_name name of task
-#' @param jsPsych_version If you set a specific version number of jsPsych,
-#'                set_jsPsych prepare a file with that version of jsPsych.
-#' @param use_rc Specify 1 as the argument if you want to create a folder with the project name and place the file inside it, 2 if you want to place the file in the current working directory, and 3 if a Research Compendium is set up.
-#' @examples # set_cbat("stroop","8.2.2")
+#' @param task_name A character string specifying the name of the task. This will be used as the directory name. Default is "task_name".
+#' @param jsPsych_version A character string specifying the version of jsPsych to use (e.g., "6.3.1", "7.3.4", "8.2.2").
+#' The function validates if the provided version is supported before downloading.
+#' @examples
+#' \dontrun{
+#'   # Initialize a task named "stroop" with jsPsych version 8.2.2
+#'   set_cbat(task_name = "stroop", jsPsych_version = "8.2.2")
+#' }
 #' @export
 set_cbat <- function(task_name = "task_name",
-                     jsPsych_version = "8.2.2",
-                     use_rc = 1){
+                     jsPsych_version = "8.2.2"){
   # check jsPsych version
   if(jsPsych_version=="6.3.1"||jsPsych_version=="7.1.1"||
      jsPsych_version=="7.1.2"||jsPsych_version=="7.2.1"||jsPsych_version=="7.2.2"||
@@ -23,23 +28,10 @@ set_cbat <- function(task_name = "task_name",
   }else{
     stop(paste0("jsPsych ",jsPsych_version," is not available!"))
   }
-  #check exercises directory
-  if(use_rc == 3){
-    dir_names_cwd =  basename(list.dirs())
-    if(sum(dir_names_cwd == "exercise") >= 1){
-      path = paste0(getwd(),"/exercise")
-      dir.create(file.path(path, task_name), showWarnings = FALSE)
-      path = paste0(path,"/",task_name)
-    }else{
-      stop(paste("Error! Run the code in the directory where the 'exercise' directory is located."))
-    }
-  }else if(use_rc == 1){
-    path = getwd()
-    dir.create(file.path(path, task_name), showWarnings = FALSE)
-    path = paste0(path,"/",task_name)
-  }else{
-    path = getwd()
-  }
+  # make directory
+  path = getwd()
+  dir.create(file.path(path, task_name), showWarnings = FALSE)
+  path = paste0(path,"/",task_name)
 
   # prepare the files and directories
   if(jsPsych_version == "6.3.1"){
@@ -530,7 +522,469 @@ set_phaser <- function(game_name = "game_name",
   dir.create(file.path(path, "assets"), showWarnings = FALSE)
 }
 
+#' @title Set jsPsych Questionnaire (Likert) Task
+#' @description This function creates a directory and prepares necessary files (HTML, JS, CSS) to run a questionnaire task using jsPsych. It supports specific versions of jsPsych (v7 and v8).
+#' @importFrom utils download.file
+#' @importFrom utils unzip
+#' @param task_name A character string specifying the name of the task. This will be used for the directory and file names. Default is "task_name".
+#' @param scale A character vector defining the default scale labels (e.g., c("Strongly Disagree", "Disagree", ...)).
+#' @param item A data frame defining the questionnaire items. It must contain columns: 'prompt' (question text), 'required' (true/false), 'name' (variable name), and 'labels' (variable name for scale labels).
+#' @param instruction A character string specifying the instruction or preamble text to be displayed at the top of the questionnaire.
+#' @param randomize_order A character string ("true" or "false") indicating whether to randomize the order of questions. Default is "false".
+#' @param jsPsych_version A character string specifying the version of jsPsych to use (e.g., "7.3.4" or "8.2.2").
+#'                The function checks if the version is supported and downloads the corresponding release.
+#' @examples
+#' \dontrun{
+#'   scale_list <- c("Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree")
+#'   items <- data.frame(
+#'     prompt = c("I feel happy.", "I feel energetic."),
+#'     required = c("true", "true"),
+#'     name = c("happy", "energetic"),
+#'     labels = c("scale", "scale")
+#'   )
+#'   set_qnr(task_name = "mood_survey",
+#'           scale = scale_list,
+#'           item = items,
+#'           instruction = "Please answer the following questions.",
+#'           jsPsych_version = "8.2.2")
+#' }
+#' @export
+set_qnr <- function(task_name = "task_name",
+                    scale,
+                    item,
+                    instruction,
+                    randomize_order = "false",
+                    jsPsych_version = "8.2.2"){
+  # check jsPsych version
+  if(jsPsych_version=="7.1.1"||
+     jsPsych_version=="7.1.2"||jsPsych_version=="7.2.1"||jsPsych_version=="7.2.2"||
+     jsPsych_version=="7.3.0"||jsPsych_version=="7.3.1"||jsPsych_version=="7.3.2"||
+     jsPsych_version=="7.3.3"||jsPsych_version=="7.3.4"||
+     jsPsych_version=="8.0.0"||jsPsych_version=="8.0.1"||jsPsych_version=="8.0.2"||
+     jsPsych_version=="8.0.3"||
+     jsPsych_version=="8.1.0"||
+     jsPsych_version=="8.2.0"||jsPsych_version=="8.2.1"||jsPsych_version=="8.2.2"
+  ){
+  }else{
+    stop(paste0("jsPsych ",jsPsych_version," is not available!"))
+  }
+  # make directory
+  path = getwd()
+  dir.create(file.path(path, task_name), showWarnings = FALSE)
+  path = paste0(path,"/",task_name)
 
+  # prepare the files and directories
+  if(substr(jsPsych_version, 1, 1)=="7"){
+    ## make demo-.html file
+    tmp_html <- file(file.path(path, paste0("demo_",task_name,".html")), "w")
+    writeLines("<!DOCTYPE html>", tmp_html)
+    writeLines("<html>", tmp_html)
+    writeLines(" <head>", tmp_html)
+    writeLines('  <meta charset="UTF-8" />', tmp_html)
+    writeLines('  <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=yes"/>', tmp_html)
+    writeLines(paste0('  <script src="',task_name,'/plugins.js"></script>'), tmp_html)
+    writeLines(paste0('  <link href="',task_name,'/jspsych/dist/jspsych.css" rel="stylesheet" type="text/css" />'), tmp_html)
+    writeLines(" </head>", tmp_html)
+    writeLines(" <body></body>", tmp_html)
+    writeLines(paste0(' <script type="text/javascript" src="',task_name,'/init_run/demo_jspsych_init.js"></script>'), tmp_html)
+    writeLines(paste0(' <script type="text/javascript" src="',task_name,'/task.js"></script>'), tmp_html)
+    writeLines(paste0(' <script type="text/javascript" src="',task_name,'/init_run/demo_jspsych_run.js"></script>'), tmp_html)
+    writeLines("</html>", tmp_html)
+    close(tmp_html)
+    ## make -.html file
+    tmp_html <- file(file.path(path, paste0(task_name,".html")), "w")
+    writeLines("<!DOCTYPE html>", tmp_html)
+    writeLines("<html>", tmp_html)
+    writeLines(" <head>", tmp_html)
+    writeLines('  <meta charset="UTF-8" />', tmp_html)
+    writeLines('  <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=yes"/>', tmp_html)
+    writeLines(paste0('  <script src="',task_name,'/plugins.js"></script>'), tmp_html)
+    writeLines('  <script src="jatos.js"></script>', tmp_html)
+    writeLines(paste0('  <link href="',task_name,'/jspsych/dist/jspsych.css" rel="stylesheet" type="text/css" />'), tmp_html)
+    writeLines(" </head>", tmp_html)
+    writeLines(" <body></body>", tmp_html)
+    writeLines(paste0(' <script type="text/javascript" src="',task_name,'/init_run/jatos_jspsych_init.js"></script>'), tmp_html)
+    writeLines(paste0(' <script type="text/javascript" src="',task_name,'/task.js"></script>'), tmp_html)
+    writeLines(paste0(' <script type="text/javascript" src="',task_name,'/init_run/jatos_jspsych_run.js"></script>'), tmp_html)
+    writeLines("</html>", tmp_html)
+    close(tmp_html)
+    ## make cema-.html file
+    tmp_html <- file(file.path(path, paste0("cema_",task_name,".html")), "w")
+    writeLines("<!DOCTYPE html>", tmp_html)
+    writeLines("<html>", tmp_html)
+    writeLines(" <head>", tmp_html)
+    writeLines('  <meta charset="UTF-8" />', tmp_html)
+    writeLines('  <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=yes"/>', tmp_html)
+    writeLines(paste0('  <script src="',task_name,'/plugins.js"></script>'), tmp_html)
+    # writeLines('  <script src="jatos.js"></script>', tmp_html)
+    writeLines(paste0('  <link href="',task_name,'/jspsych/dist/jspsych.css" rel="stylesheet" type="text/css" />'), tmp_html)
+    writeLines('    <style>', tmp_html)
+    writeLines('      body {', tmp_html)
+    writeLines('        text-align: center; /* Center inline-block children */', tmp_html)
+    writeLines('        padding-top: 20px; /* Add some space above the button */', tmp_html)
+    writeLines('      }', tmp_html)
+    writeLines('      #finishButton {', tmp_html)
+    writeLines('        display: none; /* Keep hidden initially */', tmp_html)
+    writeLines('        padding: 12px 24px;', tmp_html)
+    writeLines('        font-size: 16px;', tmp_html)
+    writeLines('        color: white;', tmp_html)
+    writeLines('        background-color: #03ab7e; /* #007bff Example blue color */', tmp_html)
+    writeLines('        border: none;', tmp_html)
+    writeLines('        border-radius: 5px;', tmp_html)
+    writeLines('        cursor: pointer;', tmp_html)
+    writeLines('        margin-top: 20px; /* Space between jspsych content and button */', tmp_html)
+    writeLines('        transition: background-color 0.3s ease; /* Smooth hover effect */', tmp_html)
+    writeLines('      }', tmp_html)
+    writeLines('      #finishButton:hover {', tmp_html)
+    writeLines('        background-color: #008558; /* #0056b3 Darker blue on hover */', tmp_html)
+    writeLines('      }', tmp_html)
+    writeLines('    </style>', tmp_html)
+    writeLines(" </head>", tmp_html)
+    writeLines(" <body>", tmp_html)
+    writeLines('    <div id="jspsych-display-element"></div>', tmp_html)
+    writeLines('    <button id="finishButton">\u8abf\u67fb\u306e\u56de\u7b54\u3092\u7d42\u4e86</button>', tmp_html)
+    writeLines(" </body>", tmp_html)
+    writeLines(paste0(' <script type="text/javascript" src="',task_name,'/init_run/cema_jspsych_init.js"></script>'), tmp_html)
+    writeLines(paste0(' <script type="text/javascript" src="',task_name,'/task.js"></script>'), tmp_html)
+    writeLines(paste0(' <script type="text/javascript" src="',task_name,'/init_run/cema_jspsych_run.js"></script>'), tmp_html)
+    writeLines("</html>", tmp_html)
+    close(tmp_html)
+    ## make directory of repository
+    dir.create(file.path(path, task_name), showWarnings = FALSE)
+    ## download jsPsych
+    temp_jsPsych <- tempfile()
+    if(jsPsych_version=="7.0.0"){
+      download.file(paste0('https://github.com/jspsych/jsPsych/releases/download/jspsych@7.0.0/jspsych-7.0.0-dist.zip'),temp_jsPsych)
+    }else{
+      download.file(paste0('https://github.com/jspsych/jsPsych/releases/download/jspsych@',jsPsych_version,'/jspsych.zip'),temp_jsPsych)
+    }
+    unzip(temp_jsPsych, exdir = file.path(path, task_name,"jspsych"))
+    unlink(temp_jsPsych)
+    ## make plugins.js
+    file_path <- paste0(path,"/",task_name)
+    tmp_js <- file(file.path(file_path, paste0("plugins.js")), "w")
+    writeLines(paste0(r"(document.write('<script src=")",task_name,r"(/jspsych/dist/jspsych.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/extension-mouse-tracking.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/extension-record-video.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/extension-webgazer.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-animation.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-audio-button-response.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-audio-keyboard-response.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-audio-slider-response.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-browser-check.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-call-function.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-canvas-button-response.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-canvas-keyboard-response.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-canvas-slider-response.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-categorize-animation.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-categorize-html.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-categorize-image.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-cloze.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-external-html.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-free-sort.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-fullscreen.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-html-audio-response.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-html-button-response.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-html-keyboard-response.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-html-slider-response.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-html-video-response.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-iat-html.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-iat-image.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-image-button-response.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-image-keyboard-response.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-image-slider-response.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-initialize-camera.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-initialize-microphone.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-instructions.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-maxdiff.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-mirror-camera.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-preload.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-reconstruction.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-resize.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-same-different-html.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-same-different-image.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-serial-reaction-time-mouse.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-serial-reaction-time.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-sketchpad.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-survey-html-form.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-survey-likert.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-survey-matrix-likert.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-survey-multi-choice.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-survey-multi-select.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-survey-text.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-survey.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-video-button-response.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-video-keyboard-response.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-video-slider-response.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-virtual-chinrest.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-visual-search-circle.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-webgazer-calibrate.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-webgazer-init-camera.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-webgazer-validate.js"></script>');)"), tmp_js)
+    close(tmp_js)
+    ## download js files
+    dir.create(file.path(file_path, "init_run"), showWarnings = FALSE)
+    init_run_path <- paste0(file_path,"/init_run")
+    # make task.js
+    tmp_task <- file(file.path(file_path, paste0("task.js")), "w")
+    writeLines('/* \u4ef6\u6cd5\u306e\u8a2d\u5b9a */',tmp_task)
+    writeLines('const scale = [',tmp_task)
+    for (i in scale) {
+      writeLines(paste0("'",i,"',"),tmp_task)
+    }
+    writeLines("];",tmp_task)
+    writeLines("/* \u8cea\u554f\u7d19\u306e\u8a2d\u5b9a */",tmp_task)
+    writeLines("const likert_page = {",tmp_task)
+    writeLines("  type: jsPsychSurveyLikert,",tmp_task)
+    writeLines("  questions: [",tmp_task)
+    for (i in 1:nrow(item)) {
+      writeLines(paste0("{prompt: '",item$prompt[i],"', required: ",item$required[i],", name: '",item$name[i], "', labels: ", item$labels[i] ,"},"),tmp_task)
+    }
+    writeLines("  ],",tmp_task)
+    writeLines(paste0("  randomize_question_order:",randomize_order,","),tmp_task)
+    writeLines(paste0("    preamble: '",instruction,"',"),tmp_task)
+    writeLines("  button_label: '\u6b21\u3078',",tmp_task)
+    writeLines("  on_load: function() {",tmp_task)
+    writeLines("    const style = document.createElement('style');",tmp_task)
+    writeLines("    style.innerHTML = `",tmp_task)
+    writeLines("    .jspsych-survey-likert-statement,",tmp_task)
+    writeLines("    .jspsych-survey-likert-preamble,",tmp_task)
+    writeLines("    .jspsych-survey-likert-label,",tmp_task)
+    writeLines("    .jspsych-survey-likert-question,",tmp_task)
+    writeLines("    .jspsych-survey-likert-text {",tmp_task)
+    writeLines("      text-align: left !important;",tmp_task)
+    writeLines("    }",tmp_task)
+    writeLines("    .jspsych-survey-likert-question {",tmp_task)
+    writeLines("      justify-content: flex-start !important;",tmp_task)
+    writeLines("      align-items: flex-start !important;",tmp_task)
+    writeLines("    }",tmp_task)
+    writeLines("    `;",tmp_task)
+    writeLines("    document.head.appendChild(style);",tmp_task)
+    writeLines("  }",tmp_task)
+    writeLines("};",tmp_task)
+    writeLines("/*\u30bf\u30a4\u30e0\u30e9\u30a4\u30f3\u306e\u8a2d\u5b9a*/",tmp_task)
+    writeLines("const timeline = [likert_page];",tmp_task)
+    close(tmp_task)
 
+    download.file(paste0("https://raw.githubusercontent.com/ykunisato/template-jsPsych-task/main/template-jsPsych",substr(jsPsych_version, 1, 3),"/name_of_repository/demo_jspsych_init.js"),paste0(init_run_path,"/demo_jspsych_init.js"))
+    download.file(paste0("https://raw.githubusercontent.com/ykunisato/template-jsPsych-task/main/template-jsPsych",substr(jsPsych_version, 1, 3),"/name_of_repository/demo_jspsych_run.js"),paste0(init_run_path,"/demo_jspsych_run.js"))
+    download.file(paste0("https://raw.githubusercontent.com/ykunisato/template-jsPsych-task/main/template-jsPsych",substr(jsPsych_version, 1, 3),"/name_of_repository/jatos_jspsych_init.js"),paste0(init_run_path,"/jatos_jspsych_init.js"))
+    download.file(paste0("https://raw.githubusercontent.com/ykunisato/template-jsPsych-task/main/template-jsPsych",substr(jsPsych_version, 1, 3),"/name_of_repository/jatos_jspsych_run.js"),paste0(init_run_path,"/jatos_jspsych_run.js"))
+    download.file(paste0("https://raw.githubusercontent.com/ykunisato/template-jsPsych-task/main/template-jsPsych",substr(jsPsych_version, 1, 3),"/name_of_repository/jspsych/plugin-survey-matrix-likert.js"),paste0(file_path,"/jspsych/dist/plugin-survey-matrix-likert.js"))
+    download.file(paste0("https://raw.githubusercontent.com/ykunisato/template-jsPsych-task/main/template-jsPsych",substr(jsPsych_version, 1, 3),"/name_of_repository/cema_jspsych_init.js"),paste0(init_run_path,"/cema_jspsych_init.js"))
+    download.file(paste0("https://raw.githubusercontent.com/ykunisato/template-jsPsych-task/main/template-jsPsych",substr(jsPsych_version, 1, 3),"/name_of_repository/cema_jspsych_run.js"),paste0(init_run_path,"/cema_jspsych_run.js"))
+    ## make stimli directory and picture
+    dir.create(file.path(file_path, "stimuli"), showWarnings = FALSE)
+    stim_path <- paste0(file_path,"/stimuli")
+    download.file(paste0("https://raw.githubusercontent.com/ykunisato/template-jsPsych-task/main/template-jsPsych",substr(jsPsych_version, 1, 3),"/name_of_repository/stimuli/reward.jpeg"),paste0(stim_path,"/reward.jpeg"))
+    download.file(paste0("https://raw.githubusercontent.com/ykunisato/template-jsPsych-task/main/template-jsPsych",substr(jsPsych_version, 1, 3),"/name_of_repository/stimuli/punishment.jpeg"),paste0(stim_path,"/punishment.jpeg"))
+    download.file(paste0("https://raw.githubusercontent.com/ykunisato/template-jsPsych-task/main/template-jsPsych",substr(jsPsych_version, 1, 3),"/name_of_repository/stimuli/s1.jpeg"),paste0(stim_path,"/s1.jpeg"))
+    download.file(paste0("https://raw.githubusercontent.com/ykunisato/template-jsPsych-task/main/template-jsPsych",substr(jsPsych_version, 1, 3),"/name_of_repository/stimuli/s1s.jpeg"),paste0(stim_path,"/s1s.jpeg"))
+    download.file(paste0("https://raw.githubusercontent.com/ykunisato/template-jsPsych-task/main/template-jsPsych",substr(jsPsych_version, 1, 3),"/name_of_repository/stimuli/s2.jpeg"),paste0(stim_path,"/s2.jpeg"))
+    download.file(paste0("https://raw.githubusercontent.com/ykunisato/template-jsPsych-task/main/template-jsPsych",substr(jsPsych_version, 1, 3),"/name_of_repository/stimuli/s2s.jpeg"),paste0(stim_path,"/s2s.jpeg"))
+  }else if(substr(jsPsych_version, 1, 1)=="8"){
+    ## make demo-.html file
+    tmp_html <- file(file.path(path, paste0("demo_",task_name,".html")), "w")
+    writeLines("<!DOCTYPE html>", tmp_html)
+    writeLines("<html>", tmp_html)
+    writeLines(" <head>", tmp_html)
+    writeLines('  <meta charset="UTF-8" />', tmp_html)
+    writeLines('  <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=yes"/>', tmp_html)
+    writeLines(paste0('  <script src="',task_name,'/plugins.js"></script>'), tmp_html)
+    writeLines(paste0('  <link href="',task_name,'/jspsych/dist/jspsych.css" rel="stylesheet" type="text/css" />'), tmp_html)
+    writeLines(" </head>", tmp_html)
+    writeLines(" <body></body>", tmp_html)
+    writeLines(paste0(' <script type="text/javascript" src="',task_name,'/init_run/demo_jspsych_init.js"></script>'), tmp_html)
+    writeLines(paste0(' <script type="text/javascript" src="',task_name,'/task.js"></script>'), tmp_html)
+    writeLines(paste0(' <script type="text/javascript" src="',task_name,'/init_run/demo_jspsych_run.js"></script>'), tmp_html)
+    writeLines("</html>", tmp_html)
+    close(tmp_html)
+    ## make -.html file
+    tmp_html <- file(file.path(path, paste0(task_name,".html")), "w")
+    writeLines("<!DOCTYPE html>", tmp_html)
+    writeLines("<html>", tmp_html)
+    writeLines(" <head>", tmp_html)
+    writeLines('  <meta charset="UTF-8" />', tmp_html)
+    writeLines('  <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=yes"/>', tmp_html)
+    writeLines(paste0('  <script src="',task_name,'/plugins.js"></script>'), tmp_html)
+    writeLines('  <script src="jatos.js"></script>', tmp_html)
+    writeLines(paste0('  <link href="',task_name,'/jspsych/dist/jspsych.css" rel="stylesheet" type="text/css" />'), tmp_html)
+    writeLines(" </head>", tmp_html)
+    writeLines(" <body></body>", tmp_html)
+    writeLines(paste0(' <script type="text/javascript" src="',task_name,'/init_run/jatos_jspsych_init.js"></script>'), tmp_html)
+    writeLines(paste0(' <script type="text/javascript" src="',task_name,'/task.js"></script>'), tmp_html)
+    writeLines(paste0(' <script type="text/javascript" src="',task_name,'/init_run/jatos_jspsych_run.js"></script>'), tmp_html)
+    writeLines("</html>", tmp_html)
+    close(tmp_html)
+    ## make cema-.html file
+    tmp_html <- file(file.path(path, paste0("cema_",task_name,".html")), "w")
+    writeLines("<!DOCTYPE html>", tmp_html)
+    writeLines("<html>", tmp_html)
+    writeLines(" <head>", tmp_html)
+    writeLines('  <meta charset="UTF-8" />', tmp_html)
+    writeLines('  <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=yes"/>', tmp_html)
+    writeLines(paste0('  <script src="',task_name,'/plugins.js"></script>'), tmp_html)
+    # writeLines('  <script src="jatos.js"></script>', tmp_html)
+    writeLines(paste0('  <link href="',task_name,'/jspsych/dist/jspsych.css" rel="stylesheet" type="text/css" />'), tmp_html)
+    writeLines('    <style>', tmp_html)
+    writeLines('      body {', tmp_html)
+    writeLines('        text-align: center; /* Center inline-block children */', tmp_html)
+    writeLines('        padding-top: 20px; /* Add some space above the button */', tmp_html)
+    writeLines('      }', tmp_html)
+    writeLines('      #finishButton {', tmp_html)
+    writeLines('        display: none; /* Keep hidden initially */', tmp_html)
+    writeLines('        padding: 12px 24px;', tmp_html)
+    writeLines('        font-size: 16px;', tmp_html)
+    writeLines('        color: white;', tmp_html)
+    writeLines('        background-color: #03ab7e; /* #007bff Example blue color */', tmp_html)
+    writeLines('        border: none;', tmp_html)
+    writeLines('        border-radius: 5px;', tmp_html)
+    writeLines('        cursor: pointer;', tmp_html)
+    writeLines('        margin-top: 20px; /* Space between jspsych content and button */', tmp_html)
+    writeLines('        transition: background-color 0.3s ease; /* Smooth hover effect */', tmp_html)
+    writeLines('      }', tmp_html)
+    writeLines('      #finishButton:hover {', tmp_html)
+    writeLines('        background-color: #008558; /* #0056b3 Darker blue on hover */', tmp_html)
+    writeLines('      }', tmp_html)
+    writeLines('    </style>', tmp_html)
+    writeLines(" </head>", tmp_html)
+    writeLines(" <body>", tmp_html)
+    writeLines('    <div id="jspsych-display-element"></div>', tmp_html)
+    writeLines('    <button id="finishButton">\u8abf\u67fb\u306e\u56de\u7b54\u3092\u7d42\u4e86</button>', tmp_html)
+    writeLines(" </body>", tmp_html)
+    writeLines(paste0(' <script type="text/javascript" src="',task_name,'/init_run/cema_jspsych_init.js"></script>'), tmp_html)
+    writeLines(paste0(' <script type="text/javascript" src="',task_name,'/task.js"></script>'), tmp_html)
+    writeLines(paste0(' <script type="text/javascript" src="',task_name,'/init_run/cema_jspsych_run.js"></script>'), tmp_html)
+    writeLines("</html>", tmp_html)
+    close(tmp_html)
+    ## make directory of repository
+    dir.create(file.path(path, task_name), showWarnings = FALSE)
+    ## download jsPsych
+    temp_jsPsych <- tempfile()
+    download.file(paste0('https://github.com/jspsych/jsPsych/releases/download/jspsych%40',jsPsych_version,'/jspsych.zip'),temp_jsPsych)
+    unzip(temp_jsPsych, exdir = file.path(path, task_name,"jspsych"))
+    unlink(temp_jsPsych)
+    ## make plugins.js
+    file_path <- paste0(path,"/",task_name)
+    tmp_js <- file(file.path(file_path, paste0("plugins.js")), "w")
+    writeLines(paste0(r"(document.write('<script src=")",task_name,r"(/jspsych/dist/jspsych.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/extension-mouse-tracking.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/extension-record-video.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/extension-webgazer.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-animation.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-audio-button-response.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-audio-keyboard-response.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-audio-slider-response.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-browser-check.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-call-function.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-canvas-button-response.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-canvas-keyboard-response.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-canvas-slider-response.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-categorize-animation.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-categorize-html.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-categorize-image.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-cloze.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-external-html.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-free-sort.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-fullscreen.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-html-audio-response.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-html-button-response.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-html-keyboard-response.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-html-slider-response.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-html-video-response.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-iat-html.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-iat-image.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-image-button-response.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-image-keyboard-response.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-image-slider-response.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-initialize-camera.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-initialize-microphone.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-instructions.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-maxdiff.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-mirror-camera.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-preload.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-reconstruction.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-resize.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-same-different-html.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-same-different-image.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-serial-reaction-time-mouse.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-serial-reaction-time.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-sketchpad.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-survey-html-form.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-survey-likert.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-survey-matrix-likert.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-survey-multi-choice.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-survey-multi-select.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-survey-text.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-survey.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-video-button-response.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-video-keyboard-response.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-video-slider-response.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-virtual-chinrest.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-visual-search-circle.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-webgazer-calibrate.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-webgazer-init-camera.js"></script>');)"), tmp_js)
+    writeLines(paste0(r"(// document.write('<script src=")",task_name,r"(/jspsych/dist/plugin-webgazer-validate.js"></script>');)"), tmp_js)
+    close(tmp_js)
+    ## download js files
+    dir.create(file.path(file_path, "init_run"), showWarnings = FALSE)
+    init_run_path <- paste0(file_path,"/init_run")
+    # make task.js
+    tmp_task <- file(file.path(file_path, paste0("task.js")), "w")
+    writeLines('/* \u4ef6\u6cd5\u306e\u8a2d\u5b9a */',tmp_task)
+    writeLines('const scale = [',tmp_task)
+    for (i in scale) {
+      writeLines(paste0("'",i,"',"),tmp_task)
+    }
+    writeLines("];",tmp_task)
+    writeLines("/* \u8cea\u554f\u7d19\u306e\u8a2d\u5b9a */",tmp_task)
+    writeLines("const likert_page = {",tmp_task)
+    writeLines("  type: jsPsychSurveyLikert,",tmp_task)
+    writeLines("  questions: [",tmp_task)
+    for (i in 1:nrow(item)) {
+      writeLines(paste0("{prompt: '",item$prompt[i],"', required: ",item$required[i],", name: '",item$name[i], "', labels: ", item$labels[i] ,"},"),tmp_task)
+    }
+    writeLines("  ],",tmp_task)
+    writeLines(paste0("  randomize_question_order:",randomize_order,","),tmp_task)
+    writeLines(paste0("    preamble: '",instruction,"',"),tmp_task)
+    writeLines("  button_label: '\u6b21\u3078',",tmp_task)
+    writeLines("  on_load: function() {",tmp_task)
+    writeLines("    const style = document.createElement('style');",tmp_task)
+    writeLines("    style.innerHTML = `",tmp_task)
+    writeLines("    .jspsych-survey-likert-statement,",tmp_task)
+    writeLines("    .jspsych-survey-likert-preamble,",tmp_task)
+    writeLines("    .jspsych-survey-likert-label,",tmp_task)
+    writeLines("    .jspsych-survey-likert-question,",tmp_task)
+    writeLines("    .jspsych-survey-likert-text {",tmp_task)
+    writeLines("      text-align: left !important;",tmp_task)
+    writeLines("    }",tmp_task)
+    writeLines("    .jspsych-survey-likert-question {",tmp_task)
+    writeLines("      justify-content: flex-start !important;",tmp_task)
+    writeLines("      align-items: flex-start !important;",tmp_task)
+    writeLines("    }",tmp_task)
+    writeLines("    `;",tmp_task)
+    writeLines("    document.head.appendChild(style);",tmp_task)
+    writeLines("  }",tmp_task)
+    writeLines("};",tmp_task)
+    writeLines("/*\u30bf\u30a4\u30e0\u30e9\u30a4\u30f3\u306e\u8a2d\u5b9a*/",tmp_task)
+    writeLines("const timeline = [likert_page];",tmp_task)
+    close(tmp_task)
 
-
+    download.file(paste0("https://raw.githubusercontent.com/ykunisato/template-jsPsych-task/main/template-jsPsych",substr(jsPsych_version, 1, 3),"/name_of_repository/demo_jspsych_init.js"),paste0(init_run_path,"/demo_jspsych_init.js"))
+    download.file(paste0("https://raw.githubusercontent.com/ykunisato/template-jsPsych-task/main/template-jsPsych",substr(jsPsych_version, 1, 3),"/name_of_repository/demo_jspsych_run.js"),paste0(init_run_path,"/demo_jspsych_run.js"))
+    download.file(paste0("https://raw.githubusercontent.com/ykunisato/template-jsPsych-task/main/template-jsPsych",substr(jsPsych_version, 1, 3),"/name_of_repository/jatos_jspsych_init.js"),paste0(init_run_path,"/jatos_jspsych_init.js"))
+    download.file(paste0("https://raw.githubusercontent.com/ykunisato/template-jsPsych-task/main/template-jsPsych",substr(jsPsych_version, 1, 3),"/name_of_repository/jatos_jspsych_run.js"),paste0(init_run_path,"/jatos_jspsych_run.js"))
+    download.file(paste0("https://raw.githubusercontent.com/ykunisato/template-jsPsych-task/main/template-jsPsych",substr(jsPsych_version, 1, 3),"/name_of_repository/jspsych/plugin-survey-matrix-likert.js"),paste0(file_path,"/jspsych/dist/plugin-survey-matrix-likert.js"))
+    download.file(paste0("https://raw.githubusercontent.com/ykunisato/template-jsPsych-task/main/template-jsPsych",substr(jsPsych_version, 1, 3),"/name_of_repository/cema_jspsych_init.js"),paste0(init_run_path,"/cema_jspsych_init.js"))
+    download.file(paste0("https://raw.githubusercontent.com/ykunisato/template-jsPsych-task/main/template-jsPsych",substr(jsPsych_version, 1, 3),"/name_of_repository/cema_jspsych_run.js"),paste0(init_run_path,"/cema_jspsych_run.js"))
+    ## make stimli directory and picture
+    dir.create(file.path(file_path, "stimuli"), showWarnings = FALSE)
+    stim_path <- paste0(file_path,"/stimuli")
+    download.file(paste0("https://raw.githubusercontent.com/ykunisato/template-jsPsych-task/main/template-jsPsych",substr(jsPsych_version, 1, 3),"/name_of_repository/stimuli/reward.jpeg"),paste0(stim_path,"/reward.jpeg"))
+    download.file(paste0("https://raw.githubusercontent.com/ykunisato/template-jsPsych-task/main/template-jsPsych",substr(jsPsych_version, 1, 3),"/name_of_repository/stimuli/punishment.jpeg"),paste0(stim_path,"/punishment.jpeg"))
+    download.file(paste0("https://raw.githubusercontent.com/ykunisato/template-jsPsych-task/main/template-jsPsych",substr(jsPsych_version, 1, 3),"/name_of_repository/stimuli/s1.jpeg"),paste0(stim_path,"/s1.jpeg"))
+    download.file(paste0("https://raw.githubusercontent.com/ykunisato/template-jsPsych-task/main/template-jsPsych",substr(jsPsych_version, 1, 3),"/name_of_repository/stimuli/s1s.jpeg"),paste0(stim_path,"/s1s.jpeg"))
+    download.file(paste0("https://raw.githubusercontent.com/ykunisato/template-jsPsych-task/main/template-jsPsych",substr(jsPsych_version, 1, 3),"/name_of_repository/stimuli/s2.jpeg"),paste0(stim_path,"/s2.jpeg"))
+    download.file(paste0("https://raw.githubusercontent.com/ykunisato/template-jsPsych-task/main/template-jsPsych",substr(jsPsych_version, 1, 3),"/name_of_repository/stimuli/s2s.jpeg"),paste0(stim_path,"/s2s.jpeg"))
+  }
+}

@@ -2,21 +2,24 @@
 % Please edit documentation in R/set_cbat.R
 \name{set_cbat}
 \alias{set_cbat}
-\title{Set template files for CBAT}
+\title{Initialize CBAT (Task Template)}
 \usage{
-set_cbat(task_name = "task_name", jsPsych_version = "8.2.2", use_rc = 1)
+set_cbat(task_name = "task_name", jsPsych_version = "8.2.2")
 }
 \arguments{
-\item{task_name}{name of task}
+\item{task_name}{A character string specifying the name of the task. This will be used as the directory name. Default is "task_name".}
 
-\item{jsPsych_version}{If you set a specific version number of jsPsych,
-set_jsPsych prepare a file with that version of jsPsych.}
-
-\item{use_rc}{Specify 1 as the argument if you want to create a folder with the project name and place the file inside it, 2 if you want to place the file in the current working directory, and 3 if a Research Compendium is set up.}
+\item{jsPsych_version}{A character string specifying the version of jsPsych to use (e.g., "6.3.1", "7.3.4", "8.2.2").
+The function validates if the provided version is supported before downloading.}
 }
 \description{
-Set template files for CBAT
+This function creates a new directory for a task and sets up the necessary files to run a jsPsych experiment (CBAT).
+It downloads the specified version of jsPsych (v6, v7, or v8), prepares HTML files for different environments (Demo, JATOS, CEMA),
+and downloads template JavaScript files and stimuli (reward/punishment images) from the template repository.
 }
 \examples{
-# set_cbat("stroop","8.2.2")
+\dontrun{
+  # Initialize a task named "stroop" with jsPsych version 8.2.2
+  set_cbat(task_name = "stroop", jsPsych_version = "8.2.2")
+}
 }
