@@ -93,6 +93,7 @@ set_qnr(task_name = "mood_survey",
         scale = scale_list,
         item = items,
         instruction = "Please answer the following questions.",
+        randomize_order = true,
         jsPsych_version = "8.2.2")
 ```
 
