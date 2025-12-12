@@ -7,7 +7,7 @@ cbat4r is an R package designed to facilitate the creation and management of cog
 You can install the package from GitHub:
 
 ```r
-# install.packages("devtools")
+# install.packages("remotes")
 remotes::install_github("cba-toolbox/cbat4r")
 ```
 
