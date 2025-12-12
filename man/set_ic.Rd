@@ -28,3 +28,10 @@ set_ic(
 \description{
 This function creates a directory and prepares necessary files to run an Informed Consent task using jsPsych. It converts Markdown text to HTML for the consent document.
 }
+\examples{
+\dontrun{
+ set_ic(task_name = "consent_task",
+        ic_markdown = ic_text,
+        jsPsych_version = "8.2.2")
+}
+}
