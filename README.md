@@ -8,7 +8,7 @@ You can install the package from GitHub:
 
 ```r
 # install.packages("devtools")
-devtools::install_github("cba-toolbox/cbat4r")
+remotes::install_github("cba-toolbox/cbat4r")
 ```
 
 ## Functions
@@ -93,11 +93,52 @@ set_qnr(task_name = "mood_survey",
         scale = scale_list,
         item = items,
         instruction = "Please answer the following questions.",
-        randomize_order = true,
+        randomize_order = "true",
         jsPsych_version = "8.2.2")
 ```
 
-### 4. set_phaser
+### 4. set_ic
+
+Creates a directory and prepares necessary files to run an Informed Consent task using jsPsych. It converts Markdown text to HTML for the consent document.
+
+**Usage:**
+
+```r
+set_ic(task_name = "ic", ic_markdown, ic_question = "...", ic_agree_label = "...", jsPsych_version = "8.2.2")
+```
+
+**Arguments:**
+
+*   `task_name`: A character string specifying the name of the task. Default is "ic".
+*   `ic_markdown`: A character string containing the IC text in Markdown format, or a path to a .md file.
+*   `ic_question`: A character string for the consent question. Default is English ("Do you agree...").
+*   `ic_agree_label`: A character string for the consent checkbox label. Default is English ("I have read...").
+*   `jsPsych_version`: The version of jsPsych to use.
+
+**Example:**
+
+```r
+# Using a markdown string
+ic_text <- "
+# Informed Consent
+This study investigates...
+## Purpose
+The purpose is...
+"
+
+set_ic(task_name = "consent_task",
+       ic_markdown = ic_text,
+       jsPsych_version = "8.2.2")
+
+# Using a markdown file and custom Japanese labels
+# set_ic(task_name = "consent_jp",
+#        ic_markdown = "path/to/consent.md",
+#        ic_question = "Do you agree to participate in the research after reading and understanding the above information?",
+#        ic_agree_label = "I have read and understood the information and agree to participate in the research.",
+#        jsPsych_version = "8.2.2")
+```
+
+### 5. set_phaser
 
 Sets up template files for a Phaser3 game.
 

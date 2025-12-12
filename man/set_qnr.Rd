@@ -14,35 +14,18 @@ set_qnr(
 )
 }
 \arguments{
-\item{task_name}{A character string specifying the name of the task. This will be used for the directory and file names. Default is "task_name".}
+\item{task_name}{A character string specifying the name of the task.}
 
-\item{scale}{A character vector defining the default scale labels (e.g., c("Strongly Disagree", "Disagree", ...)).}
+\item{scale}{A character vector defining the default scale labels.}
 
-\item{item}{A data frame defining the questionnaire items. It must contain columns: 'prompt' (question text), 'required' (true/false), 'name' (variable name), and 'labels' (variable name for scale labels).}
+\item{item}{A data frame defining the questionnaire items.}
 
-\item{instruction}{A character string specifying the instruction or preamble text to be displayed at the top of the questionnaire.}
+\item{instruction}{A character string specifying the instruction text.}
 
-\item{randomize_order}{A character string ("true" or "false") indicating whether to randomize the order of questions. Default is "false".}
+\item{randomize_order}{A character string ("true" or "false"). Default is "false".}
 
-\item{jsPsych_version}{A character string specifying the version of jsPsych to use (e.g., "7.3.4" or "8.2.2").
-The function checks if the version is supported and downloads the corresponding release.}
+\item{jsPsych_version}{A character string specifying the version of jsPsych to use.}
 }
 \description{
-This function creates a directory and prepares necessary files (HTML, JS, CSS) to run a questionnaire task using jsPsych. It supports specific versions of jsPsych (v7 and v8).
-}
-\examples{
-\dontrun{
-  scale_list <- c("Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree")
-  items <- data.frame(
-    prompt = c("I feel happy.", "I feel energetic."),
-    required = c("true", "true"),
-    name = c("happy", "energetic"),
-    labels = c("scale", "scale")
-  )
-  set_qnr(task_name = "mood_survey",
-          scale = scale_list,
-          item = items,
-          instruction = "Please answer the following questions.",
-          jsPsych_version = "8.2.2")
-}
+This function creates a directory and prepares necessary files (HTML, JS, CSS) to run a questionnaire task using jsPsych.
 }
