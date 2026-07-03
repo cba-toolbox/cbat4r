@@ -1,5 +1,7 @@
 # cbat4r
 
+[日本語版 README はこちら](README_jp.md)
+
 cbat4r is an R package designed to facilitate the creation and management of cognitive behavioral tasks and questionnaires for online experiments, specifically integrating with JATOS and jsPsych.
 
 A Python port with the same API is available as [pycbat](https://github.com/cba-toolbox/pycbat).
