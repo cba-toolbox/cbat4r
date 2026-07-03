@@ -2,6 +2,10 @@
 
 cbat4r is an R package designed to facilitate the creation and management of cognitive behavioral tasks and questionnaires for online experiments, specifically integrating with JATOS and jsPsych.
 
+A Python port with the same API is available as [pycbat](https://github.com/cba-toolbox/pycbat).
+
+The template assets of [template-jsPsych-task](https://github.com/ykunisato/template-jsPsych-task) (HTML entry points, init/run scripts, starter `task.js`, stimuli, custom plugins) are bundled with the package, so task creation needs no template download. Only the official jsPsych distribution is downloaded — once per version — and cached (in `tools::R_user_dir("cbat4r", "cache")`, or `$CBAT4R_CACHE_DIR` if set), so repeated task creation works offline.
+
 ## Installation
 
 You can install the package from GitHub:
@@ -13,45 +17,26 @@ remotes::install_github("cba-toolbox/cbat4r")
 
 ## Functions
 
-### 1. jatosify
+All `set_*` functions share these arguments:
 
-Creates a JATOS `.jzip` file from a list of HTML files. This file can be imported directly into JATOS.
+*   `output_dir`: Directory in which the task directory is created (defaults to the current working directory).
+*   `overwrite`: Existing task directories are never overwritten unless `overwrite = TRUE`.
 
-**Usage:**
+### 1. set_cbat
 
-```r
-jatosify(study_title, html_file_list, JATOS_version, study_desc = "", study_comment = "", output_dir = ".")
-```
-
-**Arguments:**
-
-*   `study_title`: The title of the study. Used for filenames.
-*   `html_file_list`: A vector of HTML filenames to be used as JATOS components (order is preserved).
-*   `JATOS_version`: The version of the study (e.g., "3.9.0").
-*   `study_desc`: A short description of the study (optional).
-*   `study_comment`: Comments about the study (optional).
-*   `output_dir`: The output directory for the .jzip file (defaults to the current directory).
-
-**Example:**
-
-```r
-jatosify("exp01", c("ic.html", "age_gender.html", "task01.html"), "3.9")
-```
-
-### 2. set_cbat
-
-Initializes a new directory for a task and sets up the necessary files to run a jsPsych experiment (CBAT). It supports multiple versions of jsPsych.
+Initializes a new directory for a task and sets up the necessary files to run a jsPsych experiment (CBAT): HTML entry points for the Demo, JATOS, and CEMA environments, init/run scripts, a starter `task.js`, default stimuli, and the official jsPsych distribution.
 
 **Usage:**
 
 ```r
-set_cbat(task_name = "task_name", jsPsych_version = "8.2.2")
+set_cbat(task_name = "task_name", jsPsych_version = "8.2.2",
+         output_dir = ".", overwrite = FALSE)
 ```
 
 **Arguments:**
 
 *   `task_name`: The name of the task. A directory with this name will be created.
-*   `jsPsych_version`: The version of jsPsych to use (e.g., "6.3.1", "7.3.4", "8.2.2").
+*   `jsPsych_version`: The version of jsPsych to use (e.g., "6.3.1", "7.3.4", "8.2.2"). Any jsPsych 7.1+ release works, including releases newer than this package.
 
 **Example:**
 
@@ -60,23 +45,40 @@ set_cbat(task_name = "task_name", jsPsych_version = "8.2.2")
 set_cbat(task_name = "stroop", jsPsych_version = "8.2.2")
 ```
 
-### 3. set_qnr
+This creates:
 
-Creates a directory and prepares necessary files (HTML, JS, CSS) to run a questionnaire task using jsPsych (Likert scale).
+```text
+stroop/
+  README_stroop.md
+  demo_stroop.html          # run locally
+  stroop.html               # run on JATOS
+  cema_stroop.html          # run on CEMA (jsPsych 7+ only)
+  stroop/
+    jspsych/                # official jsPsych distribution + custom plugins
+    stimuli/
+    *_jspsych_init.js / *_jspsych_run.js
+    task.js                 # write your task here
+```
+
+### 2. set_qnr
+
+Creates a CBAT task whose `task.js` presents a Likert-scale questionnaire. Requires jsPsych 7+.
 
 **Usage:**
 
 ```r
-set_qnr(task_name = "task_name", scale, item, instruction, randomize_order = "false", jsPsych_version = "8.2.2")
+set_qnr(task_name = "scale_name", scale, item, instruction = "",
+        randomize_order = FALSE, jsPsych_version = "8.2.2",
+        output_dir = ".", overwrite = FALSE)
 ```
 
 **Arguments:**
 
 *   `task_name`: A character string specifying the name of the task.
-*   `scale`: A character vector defining the default scale labels.
-*   `item`: A data frame defining the questionnaire items (columns: 'prompt', 'required', 'name', 'labels').
+*   `scale`: A character vector defining the scale labels.
+*   `item`: A data frame with columns `prompt` and `name`; optionally `required` (default `TRUE`) and `labels` (name of the JS variable holding the scale labels, default `"scale"`).
 *   `instruction`: A character string specifying the instruction text.
-*   `randomize_order`: "true" or "false" indicating whether to randomize question order.
+*   `randomize_order`: Whether to randomize question order (`TRUE`/`FALSE`; `"true"`/`"false"` also accepted).
 *   `jsPsych_version`: The version of jsPsych to use.
 
 **Example:**
@@ -85,26 +87,24 @@ set_qnr(task_name = "task_name", scale, item, instruction, randomize_order = "fa
 scale_list <- c("Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree")
 items <- data.frame(
   prompt = c("I feel happy.", "I feel energetic."),
-  required = c("true", "true"),
-  name = c("happy", "energetic"),
-  labels = c("scale", "scale")
+  name = c("happy", "energetic")
 )
 set_qnr(task_name = "mood_survey",
         scale = scale_list,
         item = items,
         instruction = "Please answer the following questions.",
-        randomize_order = "true",
-        jsPsych_version = "8.2.2")
+        randomize_order = TRUE)
 ```
 
-### 4. set_ic
+### 3. set_ic
 
-Creates a directory and prepares necessary files to run an Informed Consent task using jsPsych. It converts Markdown text to HTML for the consent document.
+Creates a CBAT task that shows an informed-consent document (converted from Markdown) and requires the participant to check an agreement box. Requires jsPsych 7+.
 
 **Usage:**
 
 ```r
-set_ic(task_name = "ic", ic_markdown, ic_question = "...", ic_agree_label = "...", jsPsych_version = "8.2.2")
+set_ic(task_name = "ic", ic_markdown, ic_question = "...", ic_agree_label = "...",
+       jsPsych_version = "8.2.2", output_dir = ".", overwrite = FALSE)
 ```
 
 **Arguments:**
@@ -118,7 +118,6 @@ set_ic(task_name = "ic", ic_markdown, ic_question = "...", ic_agree_label = "...
 **Example:**
 
 ```r
-# Using a markdown string
 ic_text <- "
 # Informed Consent
 This study investigates...
@@ -126,16 +125,37 @@ This study investigates...
 The purpose is...
 "
 
-set_ic(task_name = "consent_task",
-       ic_markdown = ic_text,
-       jsPsych_version = "8.2.2")
+set_ic(task_name = "consent_task", ic_markdown = ic_text)
 
-# Using a markdown file and custom Japanese labels
-# set_ic(task_name = "consent_jp",
-#        ic_markdown = "path/to/consent.md",
-#        ic_question = "Do you agree to participate in the research after reading and understanding the above information?",
-#        ic_agree_label = "I have read and understood the information and agree to participate in the research.",
-#        jsPsych_version = "8.2.2")
+# Or from a markdown file:
+# set_ic(task_name = "consent_task", ic_markdown = "path/to/consent.md")
+```
+
+### 4. jatosify
+
+Creates a JATOS `.jzip` file from a list of HTML files. This file can be imported directly into JATOS.
+
+**Usage:**
+
+```r
+jatosify(study_title, html_file_list, JATOS_version,
+         study_desc = "", study_comment = "", output_dir = ".", root_dir = ".")
+```
+
+**Arguments:**
+
+*   `study_title`: The title of the study. Used for filenames.
+*   `html_file_list`: A vector of HTML filenames to be used as JATOS components (order is preserved).
+*   `JATOS_version`: The version of the study (e.g., "3.9.0").
+*   `study_desc`: A short description of the study (optional).
+*   `study_comment`: Comments about the study (optional).
+*   `output_dir`: The output directory for the .jzip file (defaults to the current directory).
+*   `root_dir`: The directory whose contents are packaged (defaults to the current directory).
+
+**Example:**
+
+```r
+jatosify("exp01", c("ic.html", "age_gender.html", "task01.html"), "3.9.0")
 ```
 
 ### 5. set_phaser
@@ -145,17 +165,26 @@ Sets up template files for a Phaser3 game.
 **Usage:**
 
 ```r
-set_phaser(game_name = "game_name", phaser_version = "3.80.1", use_rc = TRUE)
+set_phaser(game_name = "game_name", phaser_version = "3.80.1", use_rc = TRUE,
+           output_dir = ".", overwrite = FALSE)
 ```
 
 **Arguments:**
 
 *   `game_name`: Name of the game/task.
 *   `phaser_version`: Version of Phaser to use.
-*   `use_rc`: If TRUE, checks for an "exercise" directory. If FALSE, creates in current directory.
+*   `use_rc`: If TRUE, creates the game inside the existing "exercise" directory. If FALSE, creates in `output_dir`.
 
 **Example:**
 
 ```r
-set_phaser("game1", "3.80.1", FALSE)
+set_phaser("game1", "3.80.1", use_rc = FALSE)
+```
+
+## Development
+
+Run the test suite (offline; jsPsych archives are faked through `CBAT4R_CACHE_DIR`):
+
+```r
+testthat::test_local()
 ```

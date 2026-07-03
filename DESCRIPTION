@@ -1,25 +1,36 @@
 Package: cbat4r
 Type: Package
-Title: What the Package Does (Title Case)
-Version: 0.1.4
+Title: Scaffold jsPsych Tasks in the CBAT Format
+Version: 0.2.0
 Authors@R: c(
     person(
-      "Kunisato", "Yoshihiko",
+      "Yoshihiko", "Kunisato",
       email = "ykunisato@psy.senshu-u.ac.jp",
       role = c("aut", "cre")
     )
   )
-Description: More about what it does (maybe more than one line).
-    Continuation lines should be indented.
+Description: Creates the directory layout and starter files to run 'jsPsych'
+    experiments in the CBAT (Cognitive/Behavioral Assessment Tasks) format:
+    HTML entry points for the Demo, JATOS and CEMA environments, init/run
+    scripts, starter task code, and the official 'jsPsych' distribution
+    (downloaded once per version and cached). Also generates Likert
+    questionnaire and informed-consent tasks, Phaser 3 starters, and packages
+    studies into JATOS '.jzip' archives.
 License: MIT + file LICENSE
+URL: https://github.com/cba-toolbox/cbat4r
+BugReports: https://github.com/cba-toolbox/cbat4r/issues
 Encoding: UTF-8
-LazyData: true
-Roxygen: list(markdown = TRUE)
-Imports: 
-    utils,
+Depends:
+    R (>= 4.0)
+Imports:
     jsonlite,
-    uuid,
-    zip,
+    markdown,
     tools,
-    markdown
+    utils,
+    uuid,
+    zip
+Suggests:
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+Roxygen: list(markdown = TRUE)
 Config/roxygen2/version: 8.0.0
