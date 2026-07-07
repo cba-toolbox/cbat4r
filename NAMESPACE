@@ -2,6 +2,7 @@
 
 export(jatosify)
 export(set_cbat)
+export(set_cc)
 export(set_ic)
 export(set_phaser)
 export(set_qnr)

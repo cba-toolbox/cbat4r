@@ -133,7 +133,24 @@ set_ic(task_name = "consent_task", ic_markdown = ic_text)
 # set_ic(task_name = "consent_task", ic_markdown = "path/to/consent.md")
 ```
 
-### 4. jatosify
+### 4. set_cc
+
+Creates a CBAT task that shows a randomly generated participation ID (completion code) at the end of a study, as used on crowdsourcing platforms. The participant is asked to copy the code before finishing; the code is also stored in the trial data. This is the CBAT-format equivalent of [completion-code](https://github.com/cba-toolbox/completion-code). Requires jsPsych 7+.
+
+**Usage:**
+
+```r
+set_cc(task_name = "completion_code", jsPsych_version = "8.2.2",
+       output_dir = ".", overwrite = FALSE)
+```
+
+No arguments are required:
+
+```r
+set_cc()
+```
+
+### 5. jatosify
 
 Creates a JATOS `.jzip` file from a list of HTML files. This file can be imported directly into JATOS.
 
@@ -160,7 +177,7 @@ jatosify(study_title, html_file_list, JATOS_version,
 jatosify("exp01", c("ic.html", "age_gender.html", "task01.html"), "3.9.0")
 ```
 
-### 5. set_phaser
+### 6. set_phaser
 
 Sets up template files for a Phaser3 game.
 

@@ -133,7 +133,24 @@ set_ic(task_name = "consent_task", ic_markdown = ic_text)
 # set_ic(task_name = "consent_task", ic_markdown = "path/to/consent.md")
 ```
 
-### 4. jatosify
+### 4. set_cc
+
+クラウドソーシングサイトなどで調査を行った際に、研究の最後にランダム生成した参加ID（完了コード）を提示するCBAT課題を作成します。参加者にはコードをコピーしてから終了するよう求め、コードは試行データにも保存されます。[completion-code](https://github.com/cba-toolbox/completion-code) のCBAT形式版です。jsPsych 7以降が必要です。
+
+**使い方:**
+
+```r
+set_cc(task_name = "completion_code", jsPsych_version = "8.2.2",
+       output_dir = ".", overwrite = FALSE)
+```
+
+引数の指定は不要です。
+
+```r
+set_cc()
+```
+
+### 5. jatosify
 
 HTMLファイルのリストからJATOSの `.jzip` ファイルを作成します。このファイルはJATOSに直接インポートできます。
 
@@ -160,7 +177,7 @@ jatosify(study_title, html_file_list, JATOS_version,
 jatosify("exp01", c("ic.html", "age_gender.html", "task01.html"), "3.9.0")
 ```
 
-### 5. set_phaser
+### 6. set_phaser
 
 Phaser3ゲーム用のテンプレートファイルを準備します。
 
