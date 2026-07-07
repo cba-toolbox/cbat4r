@@ -61,6 +61,7 @@ set_ic <- function(task_name = "ic",
                    ic_agree_label = "I have read and understood the information and agree to participate in the research.",
                    jsPsych_version = "8.2.2",
                    output_dir = ".",
+                   add_root_dir = TRUE,
                    overwrite = FALSE) {
   validate_qnr_ic_version(jsPsych_version)
   if (missing(ic_markdown) || !is.character(ic_markdown) || !nzchar(ic_markdown)) {
@@ -70,6 +71,7 @@ set_ic <- function(task_name = "ic",
     task_name = task_name,
     jsPsych_version = jsPsych_version,
     output_dir = output_dir,
+    add_root_dir = add_root_dir,
     overwrite = overwrite,
     task_js = consent_task_js(ic_markdown, ic_question, ic_agree_label)
   )

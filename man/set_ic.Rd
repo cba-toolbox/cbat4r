@@ -13,6 +13,7 @@ set_ic(
     "I have read and understood the information and agree to participate in the research.",
   jsPsych_version = "8.2.2",
   output_dir = ".",
+  add_root_dir = TRUE,
   overwrite = FALSE
 )
 }
@@ -33,6 +34,13 @@ package.}
 
 \item{output_dir}{Directory in which the task directory is created.
 Defaults to the current working directory.}
+
+\item{add_root_dir}{If \code{TRUE} (the default), a root directory named
+\code{task_name} is created inside \code{output_dir} and the HTML entry points and
+the \code{task_name} task directory are placed in it. If \code{FALSE}, they are
+placed directly in \code{output_dir} instead. Either way, if a directory named
+\code{task_name} already exists at the target location, an error is raised
+(unless \code{overwrite = TRUE}).}
 
 \item{overwrite}{If \code{TRUE}, an existing task directory is replaced.}
 }

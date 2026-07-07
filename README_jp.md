@@ -22,6 +22,7 @@ remotes::install_github("cba-toolbox/cbat4r")
 すべての `set_*` 関数は次の引数を共通で持ちます。
 
 *   `output_dir`: 課題ディレクトリを作成する場所（既定はカレントワーキングディレクトリ）。
+*   `add_root_dir`: `TRUE`（既定）の場合、`output_dir` 内に `task_name` という名前のルートディレクトリを作成し、その中にHTMLファイルと `task_name` の課題ディレクトリを配置します。`FALSE` の場合は、`output_dir` 直下にHTMLファイルと課題ディレクトリを配置します。いずれの場合も、配置先に `task_name` と同名のディレクトリがすでに存在するときは、エラーを出して何も作成しません（`overwrite = TRUE` を指定した場合を除く）。
 *   `overwrite`: `overwrite = TRUE` を指定しない限り、既存の課題ディレクトリは上書きされません。
 
 ### 1. set_cbat
@@ -32,7 +33,7 @@ remotes::install_github("cba-toolbox/cbat4r")
 
 ```r
 set_cbat(task_name = "task_name", jsPsych_version = "8.2.2",
-         output_dir = ".", overwrite = FALSE)
+         output_dir = ".", add_root_dir = TRUE, overwrite = FALSE)
 ```
 
 **引数:**
@@ -62,6 +63,22 @@ stroop/
     task.js                 # ここに課題を記述する
 ```
 
+`add_root_dir = FALSE` を指定すると、`stroop/` というルートディレクトリで包まずに、同じHTMLファイルと `stroop/` の課題ディレクトリを `output_dir` 直下に配置します。
+
+```r
+set_cbat(task_name = "stroop", output_dir = "my_study", add_root_dir = FALSE)
+```
+
+```text
+my_study/
+  README_stroop.md
+  demo_stroop.html
+  stroop.html
+  cema_stroop.html
+  stroop/
+    jspsych/ ...
+```
+
 ### 2. set_qnr
 
 `task.js` にリッカート尺度の質問紙を提示するCBAT課題を作成します。jsPsych 7以降が必要です。
@@ -71,7 +88,7 @@ stroop/
 ```r
 set_qnr(task_name = "scale_name", scale, item, instruction = "",
         randomize_order = FALSE, jsPsych_version = "8.2.2",
-        output_dir = ".", overwrite = FALSE)
+        output_dir = ".", add_root_dir = TRUE, overwrite = FALSE)
 ```
 
 **引数:**
@@ -106,7 +123,8 @@ set_qnr(task_name = "mood_survey",
 
 ```r
 set_ic(task_name = "ic", ic_markdown, ic_question = "...", ic_agree_label = "...",
-       jsPsych_version = "8.2.2", output_dir = ".", overwrite = FALSE)
+       jsPsych_version = "8.2.2", output_dir = ".", add_root_dir = TRUE,
+       overwrite = FALSE)
 ```
 
 **引数:**
@@ -141,7 +159,7 @@ set_ic(task_name = "consent_task", ic_markdown = ic_text)
 
 ```r
 set_cc(task_name = "completion_code", jsPsych_version = "8.2.2",
-       output_dir = ".", overwrite = FALSE)
+       output_dir = ".", add_root_dir = TRUE, overwrite = FALSE)
 ```
 
 引数の指定は不要です。

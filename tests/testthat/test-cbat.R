@@ -53,6 +53,34 @@ test_that("set_cbat refuses to overwrite unless asked", {
                  "created successfully")
 })
 
+test_that("add_root_dir = FALSE places the files directly in output_dir", {
+  local_fake_cache()
+  out <- withr::local_tempdir()
+
+  task <- set_cbat("stroop", "8.2.2", output_dir = out, add_root_dir = FALSE)
+
+  expect_true(file.exists(file.path(out, "stroop.html")))
+  expect_true(file.exists(file.path(out, "demo_stroop.html")))
+  expect_true(file.exists(file.path(out, "stroop", "task.js")))
+  expect_false(dir.exists(file.path(out, "stroop", "stroop")))
+  expect_equal(task$root, normalizePath(out))
+  expect_equal(task$task_dir, file.path(normalizePath(out), "stroop"))
+})
+
+test_that("add_root_dir = FALSE errors if the task directory already exists", {
+  local_fake_cache()
+  out <- withr::local_tempdir()
+
+  dir.create(file.path(out, "stroop"))
+  expect_error(set_cbat("stroop", "8.2.2", output_dir = out, add_root_dir = FALSE),
+               "already exists")
+
+  expect_message(set_cbat("stroop", "8.2.2", output_dir = out,
+                          add_root_dir = FALSE, overwrite = TRUE),
+                 "created successfully")
+  expect_true(file.exists(file.path(out, "stroop", "task.js")))
+})
+
 test_that("missing plugins are filled from the npm cache", {
   local_fake_cache(missing_plugin = "plugin-survey-text.js")
   out <- withr::local_tempdir()

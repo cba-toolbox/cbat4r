@@ -13,13 +13,20 @@ PLACEHOLDER <- "name_of_repository"
 create_cbat_skeleton <- function(task_name = "task_name",
                                  jsPsych_version = "8.2.2",
                                  output_dir = ".",
+                                 add_root_dir = TRUE,
                                  overwrite = FALSE,
                                  task_js = NULL) {
   validate_name(task_name, "task_name")
   major <- validate_cbat_version(jsPsych_version)
 
-  root <- file.path(normalizePath(output_dir, mustWork = TRUE), task_name)
-  ensure_clean_target(root, overwrite)
+  out <- normalizePath(output_dir, mustWork = TRUE)
+  if (isTRUE(add_root_dir)) {
+    root <- file.path(out, task_name)
+    ensure_clean_target(root, overwrite)
+  } else {
+    root <- out
+    ensure_clean_target(file.path(root, task_name), overwrite)
+  }
   task_dir <- file.path(root, task_name)
   dir.create(task_dir, showWarnings = FALSE, recursive = TRUE)
 
@@ -89,22 +96,33 @@ create_cbat_skeleton <- function(task_name = "task_name",
 #'   package.
 #' @param output_dir Directory in which the task directory is created.
 #'   Defaults to the current working directory.
+#' @param add_root_dir If `TRUE` (the default), a root directory named
+#'   `task_name` is created inside `output_dir` and the HTML entry points and
+#'   the `task_name` task directory are placed in it. If `FALSE`, they are
+#'   placed directly in `output_dir` instead. Either way, if a directory named
+#'   `task_name` already exists at the target location, an error is raised
+#'   (unless `overwrite = TRUE`).
 #' @param overwrite If `TRUE`, an existing task directory is replaced.
 #' @return (Invisibly) a list with the paths of the generated task:
 #'   `root`, `html_files`, `task_dir`, `jspsych_dir`, `stimuli_dir`.
 #' @examples
 #' \dontrun{
 #' set_cbat(task_name = "stroop", jsPsych_version = "8.2.2")
+#'
+#' # Place the HTML files and the task directory directly in "my_study"
+#' set_cbat(task_name = "stroop", output_dir = "my_study", add_root_dir = FALSE)
 #' }
 #' @export
 set_cbat <- function(task_name = "task_name",
                      jsPsych_version = "8.2.2",
                      output_dir = ".",
+                     add_root_dir = TRUE,
                      overwrite = FALSE) {
   task <- create_cbat_skeleton(
     task_name = task_name,
     jsPsych_version = jsPsych_version,
     output_dir = output_dir,
+    add_root_dir = add_root_dir,
     overwrite = overwrite
   )
   message("'", task_name, "' created successfully using jsPsych ", jsPsych_version)

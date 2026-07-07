@@ -26,12 +26,14 @@ completion_code_task_js <- function() {
 set_cc <- function(task_name = "completion_code",
                    jsPsych_version = "8.2.2",
                    output_dir = ".",
+                   add_root_dir = TRUE,
                    overwrite = FALSE) {
   validate_qnr_ic_version(jsPsych_version)
   task <- create_cbat_skeleton(
     task_name = task_name,
     jsPsych_version = jsPsych_version,
     output_dir = output_dir,
+    add_root_dir = add_root_dir,
     overwrite = overwrite,
     task_js = completion_code_task_js()
   )

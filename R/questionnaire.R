@@ -94,6 +94,7 @@ set_qnr <- function(task_name = "scale_name",
                     randomize_order = FALSE,
                     jsPsych_version = "8.2.2",
                     output_dir = ".",
+                    add_root_dir = TRUE,
                     overwrite = FALSE) {
   validate_qnr_ic_version(jsPsych_version)
   if (missing(scale)) stop("scale is required.", call. = FALSE)
@@ -102,6 +103,7 @@ set_qnr <- function(task_name = "scale_name",
     task_name = task_name,
     jsPsych_version = jsPsych_version,
     output_dir = output_dir,
+    add_root_dir = add_root_dir,
     overwrite = overwrite,
     task_js = likert_task_js(scale, item, instruction, randomize_order)
   )

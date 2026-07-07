@@ -22,6 +22,7 @@ remotes::install_github("cba-toolbox/cbat4r")
 All `set_*` functions share these arguments:
 
 *   `output_dir`: Directory in which the task directory is created (defaults to the current working directory).
+*   `add_root_dir`: If `TRUE` (the default), a root directory named `task_name` is created inside `output_dir` and the HTML entry points and the `task_name` task directory are placed in it. If `FALSE`, they are placed directly in `output_dir`. Either way, if a directory named `task_name` already exists at the target location, an error is raised and nothing is created (unless `overwrite = TRUE`).
 *   `overwrite`: Existing task directories are never overwritten unless `overwrite = TRUE`.
 
 ### 1. set_cbat
@@ -32,7 +33,7 @@ Initializes a new directory for a task and sets up the necessary files to run a 
 
 ```r
 set_cbat(task_name = "task_name", jsPsych_version = "8.2.2",
-         output_dir = ".", overwrite = FALSE)
+         output_dir = ".", add_root_dir = TRUE, overwrite = FALSE)
 ```
 
 **Arguments:**
@@ -62,6 +63,22 @@ stroop/
     task.js                 # write your task here
 ```
 
+With `add_root_dir = FALSE`, the same HTML files and the `stroop/` task directory are placed directly in `output_dir` instead of inside a wrapping `stroop/` root directory:
+
+```r
+set_cbat(task_name = "stroop", output_dir = "my_study", add_root_dir = FALSE)
+```
+
+```text
+my_study/
+  README_stroop.md
+  demo_stroop.html
+  stroop.html
+  cema_stroop.html
+  stroop/
+    jspsych/ ...
+```
+
 ### 2. set_qnr
 
 Creates a CBAT task whose `task.js` presents a Likert-scale questionnaire. Requires jsPsych 7+.
@@ -71,7 +88,7 @@ Creates a CBAT task whose `task.js` presents a Likert-scale questionnaire. Requi
 ```r
 set_qnr(task_name = "scale_name", scale, item, instruction = "",
         randomize_order = FALSE, jsPsych_version = "8.2.2",
-        output_dir = ".", overwrite = FALSE)
+        output_dir = ".", add_root_dir = TRUE, overwrite = FALSE)
 ```
 
 **Arguments:**
@@ -106,7 +123,8 @@ Creates a CBAT task that shows an informed-consent document (converted from Mark
 
 ```r
 set_ic(task_name = "ic", ic_markdown, ic_question = "...", ic_agree_label = "...",
-       jsPsych_version = "8.2.2", output_dir = ".", overwrite = FALSE)
+       jsPsych_version = "8.2.2", output_dir = ".", add_root_dir = TRUE,
+       overwrite = FALSE)
 ```
 
 **Arguments:**
@@ -141,7 +159,7 @@ Creates a CBAT task that shows a randomly generated participation ID (completion
 
 ```r
 set_cc(task_name = "completion_code", jsPsych_version = "8.2.2",
-       output_dir = ".", overwrite = FALSE)
+       output_dir = ".", add_root_dir = TRUE, overwrite = FALSE)
 ```
 
 No arguments are required:
