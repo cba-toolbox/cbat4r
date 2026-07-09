@@ -58,10 +58,13 @@ stroop/
   cema_stroop.html          # CEMA上で実行（jsPsych 7以降のみ）
   stroop/
     jspsych/                # 公式のjsPsych配布物 + カスタムプラグイン
+    jspsych-mobile.css      # survey/likert系プラグインのスマホ対応CSS
     stimuli/
     *_jspsych_init.js / *_jspsych_run.js
     task.js                 # ここに課題を記述する
 ```
+
+各HTMLエントリーポイントは `jspsych.css` の後に `jspsych-mobile.css` を読み込みます。これにより `survey-likert` / `survey` 系プラグインがスマホ対応になり、幅700px以下の画面ではリッカートの選択肢が縦並びになります（PCなど広い画面では横並びのまま）。
 
 `add_root_dir = FALSE` を指定すると、`stroop/` というルートディレクトリで包まずに、同じHTMLファイルと `stroop/` の課題ディレクトリを `output_dir` 直下に配置します。
 

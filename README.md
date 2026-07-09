@@ -58,10 +58,13 @@ stroop/
   cema_stroop.html          # run on CEMA (jsPsych 7+ only)
   stroop/
     jspsych/                # official jsPsych distribution + custom plugins
+    jspsych-mobile.css      # mobile-friendly styling for survey/likert plugins
     stimuli/
     *_jspsych_init.js / *_jspsych_run.js
     task.js                 # write your task here
 ```
+
+Each HTML entry point loads `jspsych-mobile.css` after `jspsych.css`. It makes the `survey-likert` / `survey` plugins mobile-friendly: on screens 700px wide or narrower, Likert options stack vertically (they stay in a row on wider screens).
 
 With `add_root_dir = FALSE`, the same HTML files and the `stroop/` task directory are placed directly in `output_dir` instead of inside a wrapping `stroop/` root directory:
 

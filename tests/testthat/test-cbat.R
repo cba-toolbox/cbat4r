@@ -27,6 +27,13 @@ test_that("set_cbat creates the CBAT layout for jsPsych 8", {
   html <- read_text(file.path(root, "stroop.html"))
   expect_match(html, "stroop/jspsych/jspsych.js", fixed = TRUE)
   expect_no_match(html, "name_of_repository", fixed = TRUE)
+
+  # The mobile stylesheet is bundled and linked from every HTML entry point.
+  expect_true(file.exists(file.path(task_dir, "jspsych-mobile.css")))
+  for (h in c("stroop.html", "demo_stroop.html", "cema_stroop.html")) {
+    entry <- read_text(file.path(root, h))
+    expect_match(entry, "stroop/jspsych-mobile.css", fixed = TRUE)
+  }
 })
 
 test_that("set_cbat creates the legacy layout for jsPsych 6.3.1", {
@@ -41,6 +48,11 @@ test_that("set_cbat creates the legacy layout for jsPsych 6.3.1", {
   expect_false(file.exists(file.path(root, "cema_legacy_task.html")))
   expect_true(file.exists(file.path(task_dir, "jspsych-6.3.1", "jspsych.js")))
   expect_true(file.exists(file.path(task_dir, "demo_fullscreen.js")))
+
+  # The mobile stylesheet is bundled and linked in the legacy layout too.
+  expect_true(file.exists(file.path(task_dir, "jspsych-mobile.css")))
+  html <- read_text(file.path(root, "legacy_task.html"))
+  expect_match(html, "legacy_task/jspsych-mobile.css", fixed = TRUE)
 })
 
 test_that("set_cbat refuses to overwrite unless asked", {
