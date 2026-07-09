@@ -5,6 +5,8 @@ phaser_html <- function(phaser_version) {
     "<!DOCTYPE html>",
     "<html>",
     " <head>",
+    '  <meta charset="UTF-8"/>',
+    '  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>',
     paste0('  <script src="//cdn.jsdelivr.net/npm/phaser@', phaser_version,
            '/dist/phaser.js"></script>'),
     " </head>",
